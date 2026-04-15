@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>__PAD_NAME__ · SharePad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:      #1a1814;
+      --paper:    #f5f0e6;
+      --paper-2:  #ebe4d3;
+      --rule:     #2a2620;
+      --accent:   #d4361f;
+      --muted:    #6b6354;
+      --good:     #2f7a3d;
+      --bad:      #b03020;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'JetBrains Mono', monospace;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.6rem 1.2rem;
+      border-bottom: 2px solid var(--rule);
+      background: var(--paper);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      font-family: 'Fraunces', serif;
+      font-weight: 900;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+      text-transform: none;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .brand em {
+      color: var(--accent);
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .sep {
+      width: 1px;
+      height: 16px;
+      background: var(--rule);
+      opacity: 0.4;
+    }
+
+    .pad-name {
+      font-weight: 500;
+      color: var(--ink);
+      text-transform: none;
+      letter-spacing: 0.02em;
+    }
+
+    .spacer { flex: 1; }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.6rem;
+      border: 1px solid var(--rule);
+      font-size: 0.7rem;
+    }
+    .status .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .status.ok    .dot { background: var(--good); }
+    .status.bad   .dot { background: var(--bad); }
+    .status.busy  .dot { background: var(--accent); animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .viewers {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .viewers strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      padding: 0.3rem 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 120ms;
+    }
+    .copy-btn:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .copy-btn.copied {
+      background: var(--good);
+      border-color: var(--good);
+      color: white;
+    }
+
+    .editor-wrap {
+      height: calc(100vh - 44px - 28px);
+      position: relative;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent,
+          transparent 27px,
+          rgba(42, 38, 32, 0.06) 27px,
+          rgba(42, 38, 32, 0.06) 28px
+        ),
+        var(--paper);
+    }
+
+    .margin-line {
+      position: absolute;
+      left: 60px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(212, 54, 31, 0.2);
+      pointer-events: none;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      padding: 12px 24px 12px 76px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 28px;
+      color: var(--ink);
+      resize: none;
+      outline: none;
+      caret-color: var(--accent);
+    }
+    textarea::placeholder {
+      color: var(--muted);
+      opacity: 0.5;
+      font-style: italic;
+    }
+
+    .footer {
+      height: 28px;
+      padding: 0 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      border-top: 1px solid var(--rule);
+      background: var(--paper-2);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
+    .footer .stat strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="brand">Share<em>Pad</em></a>
+    <span class="sep"></span>
+    <span class="pad-name">/ __PAD_NAME__</span>
+    <span class="spacer"></span>
+    <span class="viewers"><strong id="viewers">1</strong> viewer<span id="viewers-s"></span></span>
+    <button class="copy-btn" id="copy-btn" onclick="copyLink()">Copy link</button>
+    <span class="status" id="status"><span class="dot"></span><span id="status-text">connecting</span></span>
+  </header>
+
+  <div class="editor-wrap">
+    <div class="margin-line"></div>
+    <textarea id="editor" placeholder="Start typing. Anyone with this URL sees what you write."
+              spellcheck="false"></textarea>
+  </div>
+
+  <footer class="footer">
+    <span class="stat"><strong id="char-count">0</strong> chars</span>
+    <span class="stat"><strong id="word-count">0</strong> words</span>
+    <span class="stat" id="last-saved">never saved</span>
+    <span class="spacer"></span>
+    <span>v1 · self-hosted</span>
+  </footer>
+
+  <script>
+    const PAD = "__PAD_NAME__";
+    const editor = document.getElementById('editor');
+    const statusEl = document.getElementById('status');
+    const statusText = document.getElementById('status-text');
+    const viewersEl = document.getElementById('viewers');
+    const viewersS = document.getElementById('viewers-s');
+    const charCount = document.getElementById('char-count');
+    const wordCount = document.getElementById('word-count');
+    const lastSavedEl = document.getElementById('last-saved');
+
+    let ws = null;
+    let suppressEdit = false;     // when receiving remote update, don't echo back
+    let saveTimer = null;
+    let lastSavedAt = 0;
+    let serverVersion = 0;
+
+    function setStatus(state, label) {
+      statusEl.className = 'status ' + state;
+      statusText.textContent = label;
+    }
+
+    function updateStats() {
+      const text = editor.value;
+      charCount.textContent = text.length.toLocaleString();
+      wordCount.textContent = text.trim() ? text.trim().split(/\s+/).length.toLocaleString() : 0;
+    }
+
+    function formatTime(ts) {
+      if (!ts) return 'never saved';
+      const diff = (Date.now() / 1000) - ts;
+      if (diff < 5) return 'saved just now';
+      if (diff < 60) return `saved ${Math.floor(diff)}s ago`;
+      if (diff < 3600) return `saved ${Math.floor(diff / 60)}m ago`;
+      return `saved ${Math.floor(diff / 3600)}h ago`;
+    }
+
+    function refreshTimestamps() {
+      lastSavedEl.textContent = formatTime(lastSavedAt);
+    }
+    setInterval(refreshTimestamps, 5000);
+
+    function setViewers(n) {
+      viewersEl.textContent = n;
+      viewersS.textContent = n === 1 ? '' : 's';
+    }
+
+    function connect() {
+      setStatus('busy', 'connecting');
+      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${proto}//${location.host}/ws/${encodeURI(PAD)}`);
+
+      ws.onopen = () => setStatus('ok', 'connected');
+
+      ws.onmessage = (ev) => {
+        const msg = JSON.parse(ev.data);
+        if (msg.type === 'init') {
+          suppressEdit = true;
+          editor.value = msg.content;
+          suppressEdit = false;
+          serverVersion = msg.version;
+          lastSavedAt = msg.updated_at;
+          setViewers(msg.viewers);
+          updateStats();
+          refreshTimestamps();
+        } else if (msg.type === 'update') {
+          if (msg.version > serverVersion) {
+            // Preserve cursor position when applying remote update.
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            suppressEdit = true;
+            editor.value = msg.content;
+            suppressEdit = false;
+            editor.setSelectionRange(start, end);
+            serverVersion = msg.version;
+            lastSavedAt = msg.updated_at;
+            updateStats();
+            refreshTimestamps();
+          }
+        } else if (msg.type === 'viewers') {
+          setViewers(msg.viewers);
+        }
+      };
+
+      ws.onclose = () => {
+        setStatus('bad', 'disconnected · retrying');
+        setTimeout(connect, 1500);
+      };
+
+      ws.onerror = () => {
+        setStatus('bad', 'error');
+      };
+    }
+
+    function sendEdit() {
+      if (!ws || ws.readyState !== 1) return;
+      ws.send(JSON.stringify({ type: 'edit', content: editor.value }));
+      lastSavedAt = Date.now() / 1000;
+      refreshTimestamps();
+    }
+
+    editor.addEventListener('input', () => {
+      if (suppressEdit) return;
+      updateStats();
+      setStatus('busy', 'saving');
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        sendEdit();
+        setStatus('ok', 'saved');
+      }, 350);
+    });
+
+    // Heartbeat
+    setInterval(() => {
+      if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'ping' }));
+    }, 25000);
+
+    function copyLink() {
+      navigator.clipboard.writeText(location.href).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = 'Copied ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy link';
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    }
+
+    // Tab key inserts a real tab instead of changing focus
+    editor.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.value = editor.value.slice(0, start) + '  ' + editor.value.slice(end);
+        editor.selectionStart = editor.selectionEnd = start + 2;
+        editor.dispatchEvent(new Event('input'));
+      }
+    });
+
+    connect();
+    updateStats();
+  </script>
+</body>
+</html>
